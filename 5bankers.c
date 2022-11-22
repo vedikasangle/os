@@ -1,68 +1,68 @@
-#include<stdio.h>
+#include <stdio.h>
+int main(){
+    int n, m, i, j, k;
+    n = 5;
+    m = 3;
+    int alloc[5][3] = {{0, 1, 0},
+                       {2, 0, 0},
+                       {3, 0, 2},
+                       {2, 1, 1},
+                       {0, 0, 2}};
 
-int required[100],allocate[100],need[100];
+    int max[5][3] = {{7, 5, 3},
+                     {3, 2, 2},
+                     {9, 0, 2},
+                     {2, 2, 2},
+                     {4, 3, 3}};
 
-void main()
-{
-    int n;
-    int max=12,allocateCount=0;
+    int avail[3] = {3, 3, 2};
 
-    printf("Enter the number of processes:\n");
-    scanf("%d",&n);
-
-    printf("Enter the required resource for each process: \n");
-    for(int i=0; i<n; i++)
-    {
-        printf("Requirement for Process %d:",i+1);
-        scanf("%d",&required[i]);
+    int f[n], ans[n], ind = 0;
+    for (k = 0; k < n; k++){
+        f[k] = 0;
     }
-
-     printf("\nEnter the Allocated resource for each process: \n");
-     for(int i=0; i<n; i++)
-    {
-        printf("Allocated for process %d:",i+1);
-        scanf("%d",&allocate[i]);
-        allocateCount+=allocate[i];
-        need[i]=required[i]-allocate[i];
+    int need[n][m];
+    for (i = 0; i < n; i++){
+        for (j = 0; j < m; j++)
+            need[i][j] = max[i][j] - alloc[i][j];
     }
-                                                                                                                          
-    int available=max-allocateCount;
-    int count=n,sequence=0;
-    int ans[n],ind=0;
-    
-    for(int i=0; i<n; i++)
-    {
-       for(int j=0; j<n; j++)
-       {
-           if(need[j]!=0)
-           {
-               if(need[j]>available)
-               {
-                   continue;
-               }
-               else
-               {
-                   ans[ind++]=j+1;
-                   sequence++;
-                   count--;
-                   available+=need[j];
-                   need[j]=0;
-               }
-           }
-       }
-
-    }
-    if(sequence<n)
-    {
-        printf("\nThe system is in a unsafe state!!\n");
-    }
-    else
-    {
-        printf("\nThe system is in a safe state!!\n");
-        for(int i=0; i<n; i++)
-        {
-            printf("p%d->",ans[i]);
+    int y = 0;
+    for (k = 0; k < 5; k++){
+        for (i = 0; i < n; i++){
+            if (f[i] == 0){
+                int flag = 0;
+                for (j = 0; j < m; j++){
+                    if (need[i][j] > avail[j]){
+                        flag = 1;
+                        break;
+                    }
+                }
+                if (flag == 0){
+                    ans[ind++] = i;
+                    for (y = 0; y < m; y++)
+                        avail[y] += alloc[i][y];
+                    f[i] = 1;
+                }
+            }
         }
     }
-    
+
+    int flag = 1;
+
+    for (int i = 0; i < n; i++){
+        if (f[i] == 0){
+            flag = 0;
+            printf("The following system is not safe");
+            break;
+        }
+    }
+
+    if (flag == 1){
+        printf("Following is the SAFE Sequence\n");
+        for (i = 0; i < n - 1; i++)
+            printf(" P%d ->", ans[i]);
+        printf(" P%d", ans[n - 1]);
+    }
+
+    return (0);
 }
